@@ -1,0 +1,11 @@
+.gitignore
+.git
+venv
+*.png
+.idea
+*.xml
+__pycache__
+.cvsignore
+image
+script
+requirements.txt
