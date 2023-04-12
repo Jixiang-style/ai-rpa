@@ -1,5 +1,5 @@
 # cython: language_level=3
-from tkinter import Frame, Label, Button, LEFT, ttk
+from tkinter import Frame, Label, Button, LEFT, ttk, Entry
 
 from ttkthemes import ThemedStyle
 
@@ -154,6 +154,14 @@ class SettingTabFrame(Frame):
         if choice == ROBOT_TAB_NAME:
             print("我是机器人啦")
             # self.reset_qa_list_frame()
+            # 创建文本框
+            input_text = Entry()
+            input_text.pack()
+
+            # 调ai接口
+            def query_text():
+                return "123456"
+
             self.robot_icon = get_tk_icon(Config.robot_icon, (23, 23))
             self.app_type_label['image'] = self.robot_icon
             self.current_tab = ROBOT_TAB_NAME

@@ -1,45 +1,4 @@
 # import tkinter as tk
-#
-# def show_input():
-#     input_value = input_box.get()
-#     result_label.configure(text=input_value)
-#
-# root = tk.Tk()
-# root.geometry("400x200")
-#
-# input_box = tk.Entry(root)
-# input_box.pack(pady=20)
-#
-# show_button = tk.Button(root, text="Show Input", command=show_input)
-# show_button.pack()
-#
-# result_label = tk.Label(root)
-# result_label.pack(pady=20)
-#
-# root.mainloop()
-
-
-# 方法二
-# import tkinter as tk
-#
-# def process_input(*args):
-#     input_text = input_box.get()
-#     processed_text = input_text.upper()
-#     result_text.set(processed_text)
-#
-# root = tk.Tk()
-# root.geometry("400x800")
-#
-# input_text = tk.StringVar()
-# input_box = tk.Entry(root, textvariable=input_text)
-# input_text.trace("w", process_input)
-# input_box.pack(pady=80)
-#
-# result_text = tk.StringVar()
-# result_label = tk.Label(root, textvariable=result_text)
-# result_label.pack(pady=20)
-#
-# root.mainloop()
 
 # 方法三（参考）
 # import tkinter as tk
@@ -53,7 +12,7 @@
 #     result_box.configure(state='disabled')
 #
 # root = tk.Tk()
-# root.geometry("400x200")
+# root.geometry("400x400")
 #
 # input_text = tk.StringVar()
 # input_box_label = tk.Label(root, text="Input Text:")
@@ -66,8 +25,67 @@
 # result_box_label.pack(pady=5)
 # result_box = tk.Text(root, height=5, state='disabled')
 # result_box.pack(pady=5)
+
+# root.mainloop()
+
+# 方法四：
+# import tkinter as tk
+#
+# def process_input():
+#     input_text = input_box.get()
+#     processed_text = input_text.upper()
+#     result_box.configure(state='normal')
+#     result_box.delete('1.0', tk.END)
+#     result_box.insert(tk.END, processed_text)
+#     result_box.configure(state='disabled')
+#
+# root = tk.Tk()
+# # root.geometry("400x200")
+#
+# input_box_label = tk.Label(root, text="Input Text:")
+# input_box_label.pack(pady=5)
+# input_box = tk.Entry(root)
+# input_box.pack(pady=5)
+#
+# submit_button = tk.Button(root, text="Submit", command=process_input)
+# submit_button.pack(pady=5)
+#
+# result_box_label = tk.Label(root, text="Processed Text:")
+# result_box_label.pack(pady=5)
+# result_box = tk.Text(root, height=5, state='disabled')
+# result_box.pack(pady=5)
 #
 # root.mainloop()
+
+# 方法五
+import tkinter as tk
+
+# 创建窗口对象
+window = tk.Tk()
+window.title("文本处理器")
+
+# 创建文本框
+input_text = tk.Entry(window)
+input_text.pack()
+
+# 创建“处理”按钮
+def process_text():
+    text = input_text.get() # 获取输入框中的文本
+    processed_text = text.upper() # 将文本转换为大写形式
+    result_text.insert(tk.END, processed_text + "\n") # 在文本框中显示处理后的结果
+
+process_button = tk.Button(window, text="处理", command=process_text)
+process_button.pack()
+
+# 创建结果文本框
+result_label = tk.Label(window, text="处理结果：")
+result_label.pack()
+result_text = tk.Text(window)
+result_text.pack()
+
+# 运行窗口循环
+window.mainloop()
+
 '''
 备注:
 
