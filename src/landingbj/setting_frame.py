@@ -1,5 +1,5 @@
 # cython: language_level=3
-from tkinter import Frame, Label, Button, LEFT, ttk, Entry
+from tkinter import Frame, Label, Button, LEFT, ttk, Entry, END, Text
 
 from ttkthemes import ThemedStyle
 
@@ -155,13 +155,31 @@ class SettingTabFrame(Frame):
             print("我是机器人啦")
             # self.reset_qa_list_frame()
             # 创建文本框
-            input_text = Entry()
+            input_text = Entry(self.master)
             input_text.pack()
 
+            # self.main_frame.change_switch_bg()
             # 调ai接口
             def query_text():
+                text = input_text.get()
+                print(text)
                 return "123456"
 
+            # self.parent.tk()
+            # 创建"处理"按钮
+            def handle_text():
+                text = query_text()
+                resulet_text.insert(END, text + "\n")
+
+            process_button = Button(self.master, text="处理", command=handle_text)
+            process_button.pack()
+            # self.master.mainloop()
+
+            # 创建结果文本框
+            result_label = Label(self.master, text="处理结果：")
+            result_label.pack()
+            resulet_text = Text(self.master)
+            resulet_text.pack()
             self.robot_icon = get_tk_icon(Config.robot_icon, (23, 23))
             self.app_type_label['image'] = self.robot_icon
             self.current_tab = ROBOT_TAB_NAME

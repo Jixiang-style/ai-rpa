@@ -68,11 +68,13 @@ window.title("文本处理器")
 input_text = tk.Entry(window)
 input_text.pack()
 
+
 # 创建“处理”按钮
 def process_text():
-    text = input_text.get() # 获取输入框中的文本
-    processed_text = text.upper() # 将文本转换为大写形式
-    result_text.insert(tk.END, processed_text + "\n") # 在文本框中显示处理后的结果
+    text = input_text.get()  # 获取输入框中的文本
+    processed_text = text.upper()  # 将文本转换为大写形式
+    result_text.insert(tk.END, processed_text + "\n")  # 在文本框中显示处理后的结果
+
 
 process_button = tk.Button(window, text="处理", command=process_text)
 process_button.pack()
