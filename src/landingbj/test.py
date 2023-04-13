@@ -64,29 +64,29 @@ import tkinter as tk
 window = tk.Tk()
 window.title("文本处理器")
 
-# 创建文本框
-input_text = tk.Entry(window)
-input_text.pack()
-
-
-# 创建“处理”按钮
+# 创建输入框和“处理”按钮
+input_frame = tk.Frame(window)
+input_frame.pack(side=tk.TOP, pady=5)
+input_text = tk.Entry(input_frame)
+input_text.pack(side=tk.LEFT)
 def process_text():
     text = input_text.get()  # 获取输入框中的文本
     processed_text = text.upper()  # 将文本转换为大写形式
     result_text.insert(tk.END, processed_text + "\n")  # 在文本框中显示处理后的结果
+process_button = tk.Button(input_frame, text="处理", command=process_text)
+process_button.pack(side=tk.LEFT, padx=5)
 
-
-process_button = tk.Button(window, text="处理", command=process_text)
-process_button.pack()
-
-# 创建结果文本框
-result_label = tk.Label(window, text="处理结果：")
-result_label.pack()
+# 创建“处理结果”标签和文本框
+result_label = tk.Label(window, text="处理结果：", anchor=tk.W)
+result_label.pack(side=tk.TOP, anchor=tk.W)
 result_text = tk.Text(window)
-result_text.pack()
+result_text.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+# 启动事件循环
+# window.mainloop()
 
 # 运行窗口循环
-window.mainloop()
+# window.mainloop()
 
 '''
 备注:

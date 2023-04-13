@@ -1,0 +1,8 @@
+{
+    "channel_name": "qa",
+    "channel_user": "demo",
+    "login_status": "",
+    "rpa_monitor_flag": 0,
+    "rpa_robot_flag": 1,
+    "rpa_timer_flag": 0
+}

@@ -1,6 +1,8 @@
 # cython: language_level=3
-from tkinter import Frame, Label, Button, LEFT, ttk, Entry, END, Text
+import io
+from tkinter import Frame, Label, Button, LEFT, ttk, Entry, END, Text, W, TOP, BOTH, X
 
+from PIL import ImageTk, Image
 from ttkthemes import ThemedStyle
 
 from landingbj.config import Config
@@ -12,15 +14,15 @@ from landingbj.repeater_frame import RepeaterAddOrUpdateFrame, RepeaterFrame
 from landingbj.robot_frame import QaAddOrUpdateFrame, QaFrame
 from landingbj.timer_frame import TimerAddOrUpdateFrame, TimerFrame
 from landingbj.util import get_tk_icon
-
-ROBOT_TAB_NAME = '机器人'
-TIMER_TAB_NAME = '定时器'
-REPEATER_TAB_NAME = '烽火台'
-CONTACT_TAB_NAME = '联系人'
-# ROBOT_TAB_NAME = '文本生成'
-# TIMER_TAB_NAME = '图片生成'
-# REPEATER_TAB_NAME = '协调联动'
+from landingbj.qa import get_image
+# ROBOT_TAB_NAME = '机器人'
+# TIMER_TAB_NAME = '定时器'
+# REPEATER_TAB_NAME = '烽火台'
 # CONTACT_TAB_NAME = '联系人'
+ROBOT_TAB_NAME = '文本生成'
+TIMER_TAB_NAME = '图片生成'
+REPEATER_TAB_NAME = '协调联动'
+CONTACT_TAB_NAME = '联系人'
 
 TAB_NAME_ID_DICT = {
     ROBOT_TAB_NAME: 0,
@@ -154,38 +156,127 @@ class SettingTabFrame(Frame):
         if choice == ROBOT_TAB_NAME:
             print("我是机器人啦")
             # self.reset_qa_list_frame()
-            # 创建文本框
-            input_text = Entry(self.master)
-            input_text.pack()
+            # 创建子容器
+            # input_frame = Frame(self.robot_frame)
+            # input_frame.pack(side=TOP, padx=5, pady=5)
+            #
+            # input_text = Entry(input_frame)
+            # input_text.pack(side=LEFT)
+            #
+            # # 创建"处理"按钮
+            # def handle_text():
+            #     text = query_text()
+            #     input_text.delete(0, END)
+            #     resulet_text.delete("1.0", END)
+            #     resulet_text.insert(END, text + "\n")
+            #
+            # # 调ai接口
+            # def query_text():
+            #     text = input_text.get()
+            #     print(text)
+            #     return "123456"
+            #
+            # process_button = Button(input_frame, text="处理", command=handle_text)
+            # process_button.pack(side=LEFT, padx=5)
+            #
+            # # 创建结果文本框
+            # result_label = Label(self.robot_frame, text="文本结果：", anchor=W)
+            # result_label.pack(side=TOP, anchor=W)
+            # result_frame = Frame(self.robot_frame)
+            # result_frame.pack(expand=True, padx=5, pady=5)
+            # resulet_text = Text(result_frame)
+            # resulet_text.pack(side=TOP, fill=BOTH, expand=True)
 
-            # self.main_frame.change_switch_bg()
+            # 创建子容器
+            base_input_frame = Frame(self.robot_frame)
+            base_input_frame.pack(side=TOP, fill=BOTH)
+            base_text_frame = Frame(self.robot_frame)
+            base_text_frame.pack(side=TOP, fill=BOTH)
+            base_output_frame = Frame(self.robot_frame)
+            base_output_frame.pack()
+
+            input_frame = Frame(base_input_frame)
+            input_frame.pack(side=TOP, fill=BOTH, padx=5, pady=5)
+
+            input_text = Entry(input_frame)
+            input_text.pack(side=LEFT)
+
+            # 创建"处理"按钮
+            def handle_text():
+                text = query_text()
+                # input_text.delete(0, END)
+                resulet_text.delete("1.0", END)
+                resulet_text.insert(END, text + "\n")
+
             # 调ai接口
             def query_text():
                 text = input_text.get()
                 print(text)
                 return "123456"
 
-            # self.parent.tk()
-            # 创建"处理"按钮
-            def handle_text():
-                text = query_text()
-                resulet_text.insert(END, text + "\n")
-
-            process_button = Button(self.master, text="处理", command=handle_text)
-            process_button.pack()
-            # self.master.mainloop()
+            # todo "处理"按钮换成图标。布局样式待调整
+            process_button = Button(input_frame, text="处理", command=handle_text)
+            process_button.pack(side=LEFT, fill=BOTH, padx=5, pady=5)
 
             # 创建结果文本框
-            result_label = Label(self.master, text="处理结果：")
-            result_label.pack()
-            resulet_text = Text(self.master)
-            resulet_text.pack()
+            result_label = Label(base_text_frame, text="文本结果：", anchor=W)
+            result_label.pack(side=TOP, anchor=W)
+            result_frame = Frame(base_output_frame)
+            result_frame.pack(expand=True, padx=5, pady=5)
+            resulet_text = Text(result_frame)
+            resulet_text.pack(side=TOP, fill=BOTH, expand=True)
+
             self.robot_icon = get_tk_icon(Config.robot_icon, (23, 23))
             self.app_type_label['image'] = self.robot_icon
             self.current_tab = ROBOT_TAB_NAME
         elif choice == TIMER_TAB_NAME:
             print("我是定时器啦")
-            self.reset_timer_list_frame()
+            # self.reset_timer_list_frame()
+            base_input_frame = Frame(self.timer_frame)
+            base_input_frame.pack(side=TOP, fill=BOTH)
+            base_text_frame = Frame(self.robot_frame)
+            base_text_frame.pack(side=TOP, fill=BOTH)
+            base_output_frame = Frame(self.robot_frame)
+            base_output_frame.pack()
+
+            input_frame = Frame(base_input_frame)
+            input_frame.pack(side=TOP, fill=BOTH, padx=5, pady=5)
+
+            input_text = Entry(input_frame)
+            input_text.pack(side=LEFT)
+
+            # 创建"处理"按钮
+            def handle_image():
+                context = query_content()
+                # input_text.delete(0, END)
+                resulet_text.delete("1.0", END)
+                resulet_text.insert(END, context)
+                return resulet_text
+
+            # 调ai接口
+            def query_content():
+                text = input_text.get()
+                print(text)
+                content = get_image(text)
+                print(f"响应的结果类型： {type(content)}")
+                # 处理传递过来的图片字节流
+                image = Image.open(io.BytesIO(content))
+                photo_image = ImageTk.PhotoImage(image)
+                # 清除image对象，释放内存
+                image.close()
+                return photo_image
+            # todo "处理"按钮换成图标。布局样式待调整
+            process_button = Button(input_frame, text="处理", command=handle_image)
+            process_button.pack(side=LEFT, fill=BOTH, padx=5, pady=5)
+
+            # 创建结果文本框
+            result_label = Label(base_text_frame, text="图片结果：", anchor=W)
+            result_label.pack(side=TOP, anchor=W)
+            result_frame = Frame(base_output_frame)
+            result_frame.pack(expand=True, padx=5, pady=5)
+            resulet_text = Text(result_frame)
+            resulet_text.pack(side=TOP, fill=BOTH, expand=True)
+
             self.timer_icon = get_tk_icon(Config.timer_icon, (23, 23))
             self.app_type_label['image'] = self.timer_icon
             self.current_tab = TIMER_TAB_NAME
