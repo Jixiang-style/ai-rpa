@@ -1,6 +1,6 @@
 # cython: language_level=3
 import io
-from tkinter import Frame, Label, Button, LEFT, ttk, Entry, END, Text, W, TOP, BOTH, X
+from tkinter import Frame, Label, Button, LEFT, ttk, Entry, END, Text, W, TOP, BOTH
 
 from PIL import ImageTk, Image
 from ttkthemes import ThemedStyle
@@ -14,7 +14,8 @@ from landingbj.repeater_frame import RepeaterAddOrUpdateFrame, RepeaterFrame
 from landingbj.robot_frame import QaAddOrUpdateFrame, QaFrame
 from landingbj.timer_frame import TimerAddOrUpdateFrame, TimerFrame
 from landingbj.util import get_tk_icon
-from landingbj.qa import get_image
+from landingbj.qa import get_image_from_sd
+
 # ROBOT_TAB_NAME = '机器人'
 # TIMER_TAB_NAME = '定时器'
 # REPEATER_TAB_NAME = '烽火台'
@@ -154,48 +155,17 @@ class SettingTabFrame(Frame):
 
     def tab_on_change(self, choice):
         if choice == ROBOT_TAB_NAME:
-            print("我是机器人啦")
             # self.reset_qa_list_frame()
+            # 文本生成
             # 创建子容器
-            # input_frame = Frame(self.robot_frame)
-            # input_frame.pack(side=TOP, padx=5, pady=5)
-            #
-            # input_text = Entry(input_frame)
-            # input_text.pack(side=LEFT)
-            #
-            # # 创建"处理"按钮
-            # def handle_text():
-            #     text = query_text()
-            #     input_text.delete(0, END)
-            #     resulet_text.delete("1.0", END)
-            #     resulet_text.insert(END, text + "\n")
-            #
-            # # 调ai接口
-            # def query_text():
-            #     text = input_text.get()
-            #     print(text)
-            #     return "123456"
-            #
-            # process_button = Button(input_frame, text="处理", command=handle_text)
-            # process_button.pack(side=LEFT, padx=5)
-            #
-            # # 创建结果文本框
-            # result_label = Label(self.robot_frame, text="文本结果：", anchor=W)
-            # result_label.pack(side=TOP, anchor=W)
-            # result_frame = Frame(self.robot_frame)
-            # result_frame.pack(expand=True, padx=5, pady=5)
-            # resulet_text = Text(result_frame)
-            # resulet_text.pack(side=TOP, fill=BOTH, expand=True)
+            robot_input_frame = Frame(self.robot_frame)
+            robot_input_frame.pack(side=TOP, fill=BOTH)
+            robot_text_frame = Frame(self.robot_frame)
+            robot_text_frame.pack(side=TOP, fill=BOTH)
+            robot_output_frame = Frame(self.robot_frame)
+            robot_output_frame.pack()
 
-            # 创建子容器
-            base_input_frame = Frame(self.robot_frame)
-            base_input_frame.pack(side=TOP, fill=BOTH)
-            base_text_frame = Frame(self.robot_frame)
-            base_text_frame.pack(side=TOP, fill=BOTH)
-            base_output_frame = Frame(self.robot_frame)
-            base_output_frame.pack()
-
-            input_frame = Frame(base_input_frame)
+            input_frame = Frame(robot_input_frame)
             input_frame.pack(side=TOP, fill=BOTH, padx=5, pady=5)
 
             input_text = Entry(input_frame)
@@ -208,7 +178,7 @@ class SettingTabFrame(Frame):
                 resulet_text.delete("1.0", END)
                 resulet_text.insert(END, text + "\n")
 
-            # 调ai接口
+            # todo 待调FastChat接口
             def query_text():
                 text = input_text.get()
                 print(text)
@@ -219,9 +189,9 @@ class SettingTabFrame(Frame):
             process_button.pack(side=LEFT, fill=BOTH, padx=5, pady=5)
 
             # 创建结果文本框
-            result_label = Label(base_text_frame, text="文本结果：", anchor=W)
+            result_label = Label(robot_text_frame, text="文本结果：", anchor=W)
             result_label.pack(side=TOP, anchor=W)
-            result_frame = Frame(base_output_frame)
+            result_frame = Frame(robot_output_frame)
             result_frame.pack(expand=True, padx=5, pady=5)
             resulet_text = Text(result_frame)
             resulet_text.pack(side=TOP, fill=BOTH, expand=True)
@@ -230,16 +200,16 @@ class SettingTabFrame(Frame):
             self.app_type_label['image'] = self.robot_icon
             self.current_tab = ROBOT_TAB_NAME
         elif choice == TIMER_TAB_NAME:
-            print("我是定时器啦")
             # self.reset_timer_list_frame()
-            base_input_frame = Frame(self.timer_frame)
-            base_input_frame.pack(side=TOP, fill=BOTH)
-            base_text_frame = Frame(self.robot_frame)
-            base_text_frame.pack(side=TOP, fill=BOTH)
-            base_output_frame = Frame(self.robot_frame)
-            base_output_frame.pack()
+            # 图片生成
+            timer_input_frame = Frame(self.timer_frame)
+            timer_input_frame.pack(side=TOP, fill=BOTH)
+            timer_text_frame = Frame(self.timer_frame)
+            timer_text_frame.pack(side=TOP, fill=BOTH)
+            timer_output_frame = Frame(self.timer_frame)
+            timer_output_frame.pack()
 
-            input_frame = Frame(base_input_frame)
+            input_frame = Frame(timer_input_frame)
             input_frame.pack(side=TOP, fill=BOTH, padx=5, pady=5)
 
             input_text = Entry(input_frame)
@@ -256,23 +226,25 @@ class SettingTabFrame(Frame):
             # 调ai接口
             def query_content():
                 text = input_text.get()
-                print(text)
-                content = get_image(text)
-                print(f"响应的结果类型： {type(content)}")
-                # 处理传递过来的图片字节流
-                image = Image.open(io.BytesIO(content))
-                photo_image = ImageTk.PhotoImage(image)
-                # 清除image对象，释放内存
-                image.close()
-                return photo_image
+                content = get_image_from_sd(str(text))
+                print(f"响应的结果类型：{type(content)} \n  类型：{content}")
+                if isinstance(type(content), bytes):
+                    # 处理传递过来的图片字节流（todo 处理方式待改进，前端无法展示图片）
+                    image = Image.open(io.BytesIO(content))
+                    photo_image = ImageTk.PhotoImage(image)
+                    # 清除image对象，释放内存
+                    image.close()
+                    return photo_image
+                return TypeError("返回数据类型有误")
+
             # todo "处理"按钮换成图标。布局样式待调整
             process_button = Button(input_frame, text="处理", command=handle_image)
             process_button.pack(side=LEFT, fill=BOTH, padx=5, pady=5)
 
             # 创建结果文本框
-            result_label = Label(base_text_frame, text="图片结果：", anchor=W)
+            result_label = Label(timer_text_frame, text="图片结果：", anchor=W)
             result_label.pack(side=TOP, anchor=W)
-            result_frame = Frame(base_output_frame)
+            result_frame = Frame(timer_output_frame)
             result_frame.pack(expand=True, padx=5, pady=5)
             resulet_text = Text(result_frame)
             resulet_text.pack(side=TOP, fill=BOTH, expand=True)
@@ -281,7 +253,7 @@ class SettingTabFrame(Frame):
             self.app_type_label['image'] = self.timer_icon
             self.current_tab = TIMER_TAB_NAME
         elif choice == REPEATER_TAB_NAME:
-            print("我是烽火台啦")
+            # todo 协调联动 页面待完成
             self.reset_repeater_list_frame()
             self.monitor_icon = get_tk_icon(Config.monitor_icon, (23, 23))
             self.app_type_label['image'] = self.monitor_icon

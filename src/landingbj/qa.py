@@ -434,11 +434,11 @@ def get_unfollowed_info(app_id, follow_info):
     return y['data']
 
 
-post_text_path = "http://127.0.0.1:8000/txt2img"
-get_img_path = "http://127.0.0.1:8000/get_image"
+post_sd_text_url = "http://127.0.0.1:8000/txt2img"
+get_sd_img_url = "http://127.0.0.1:8000/get_image"
 
 
-def get_image(prompt: str = ''):
+def get_image_from_sd(prompt: str = ''):
     headers = {'Content-Type': 'application/json'}
     params = {"prompt": prompt,
               "steps": 2,
@@ -463,20 +463,18 @@ def get_image(prompt: str = ''):
               "ipex": False,
               "bf16": False, }
     try:
-        response = requests.request("POST", post_text_path, headers=headers, json=params)
+        response = requests.request("POST", post_sd_text_url, headers=headers, json=params)
         print(response)
         if response.status_code != 200:
             return "send txt failed"
         y = response.json()
     except Exception as e:
-        print(e)
-        return {'status': 'fialed to post the prompt'}
+        return f"fialed to post the prompt:{e}"
     if y:
-        print(f"返回图片路径{type(y)} {y}")
         try:
             data = {"image_path": y.get("result", " ")}
-            response = requests.get(get_img_path, params=data)
-            print(f"send path status{response.status_code}")
+            response = requests.get(get_sd_img_url, params=data)
+            print(f"send path status {response.status_code}")
         except Exception as e:
             return "fialed to get the image path"
         if response.status_code != 200:
